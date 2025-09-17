@@ -39,6 +39,42 @@ class User < ApplicationRecord
       User.where("name LIKE ?", "%" + content + "%")
     end
   end
+
+  # 今日の投稿数
+  def todays_books_count
+    books.where(created_at: Time.zone.today.all_day).count
+  end
+
+  # 前日の投稿数
+  def yesterdays_books_count
+    books.where(created_at: (Time.zone.yesterday.all_day)).count
+  end
+
+  # 今日と前日の投稿数の差（比率：今日/前日、小数点2桁）
+  def compare_today_and_yesterday
+    yd = yesterdays_books_count
+    yd > 0 ? (todays_books_count.to_f / yd).round(2) : "―"
+  end
+
+  # 今週の投稿数（今日含む直近7日間）
+  def this_week_books_count
+    from = Time.zone.today - 6.days
+    to = Time.zone.today.end_of_day
+    books.where(created_at: from.beginning_of_day..to).count
+  end
+
+  # 先週の投稿数（8日前～14日前）
+  def last_week_books_count
+    from = Time.zone.today - 13.days
+    to = Time.zone.today - 7.days
+    books.where(created_at: from.beginning_of_day..to.end_of_day).count
+  end
+
+  # 今週と先週の投稿数の差（比率：今週/先週、小数点2桁）
+  def compare_this_and_last_week
+    lw = last_week_books_count
+    lw > 0 ? (this_week_books_count.to_f / lw).round(2) : "―"
+  end
   
   def get_profile_image
     if profile_image.attached?
