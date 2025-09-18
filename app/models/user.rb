@@ -75,6 +75,14 @@ class User < ApplicationRecord
     lw = last_week_books_count
     lw > 0 ? (this_week_books_count.to_f / lw).round(2) : "―"
   end
+
+  # 過去7日間の投稿数を配列で返す（[今日, 1日前, ..., 6日前]）
+  def last_7_days_books_counts_reverse
+    (0..6).to_a.reverse.map do |i|
+      day = Time.zone.today - i.days
+      books.where(created_at: day.all_day).count
+    end
+  end
   
   def get_profile_image
     if profile_image.attached?

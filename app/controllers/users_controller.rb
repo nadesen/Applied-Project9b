@@ -5,6 +5,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @books = @user.books
     @book = Book.new
+
+    # 6日前〜今日（左→右）の投稿数
+    @last_7_days_counts = (6).downto(0).map do |i|
+      day = Time.zone.today - i.days
+      @user.books.where(created_at: day.all_day).count
+    end
   end
 
   def index

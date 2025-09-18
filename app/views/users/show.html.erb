@@ -44,6 +44,65 @@
           </tr>
         </tbody>
       </table>
+
+      <h2>7日間分の投稿数</h2>
+      <table class="table table-bordered text-center">
+        <thead>
+          <tr>
+            <% (6).downto(0) do |i| %>
+              <th><%= i == 0 ? "今日" : "#{i}日前" %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <% @user.last_7_days_books_counts_reverse.each do |count| %>
+              <td><%= count %></td>
+            <% end %>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>7日間の投稿数の比較</h2>
+      <canvas id="booksLineChart" width="600" height="300"></canvas>
+
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var ctx = document.getElementById('booksLineChart').getContext('2d');
+          var booksLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ["6日前", "5日前", "4日前", "3日前", "2日前", "1日前", "今日"],
+              datasets: [{
+                label: '投稿数',
+                data: <%= raw @last_7_days_counts.to_json %>,
+                fill: false,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointRadius: 5
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  min: 0,
+                  max: 10,
+                  ticks: {
+                    stepSize: 1,
+                    precision: 0,
+                    callback: function(value) { return Number.isInteger(value) ? value : null; }
+                  }
+                }
+              }
+            }
+          });
+        });
+      </script>
+
     </div>
   </div>
 </div>
