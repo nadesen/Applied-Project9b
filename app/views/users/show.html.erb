@@ -103,6 +103,50 @@
         });
       </script>
 
+      <h2>指定日の投稿数検索</h2>
+      <input type="date" id="date_picker">
+      <button id="fetch_count_btn">検索</button>
+      
+      <div id="books_count_result"></div>
+      
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          document.getElementById("fetch_count_btn").onclick = function() {
+            var date = document.getElementById("date_picker").value;
+            if (!date) return;
+      
+            fetch(`/users/<%= @user.id %>/books_count_on_date.json?date=${date}`)
+              .then(response => {
+                if(!response.ok) throw new Error("データ取得失敗");
+                return response.json();
+              })
+              .then(data => {
+                document.getElementById("books_count_result").innerHTML = `
+                  <h3>検索結果</h3>
+                  <table class="table table-bordered text-center" style="width: 300px;">
+                    <thead>
+                      <tr>
+                        <th>日付</th>
+                        <th>投稿数</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>${data.date}</td>
+                        <td>${data.count}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                `;
+              })
+              .catch(error => {
+                document.getElementById("books_count_result").innerHTML =
+                  "<span style='color:red'>エラー: " + error.message + "</span>";
+              });
+          };
+        });
+      </script>
+
     </div>
   </div>
 </div>

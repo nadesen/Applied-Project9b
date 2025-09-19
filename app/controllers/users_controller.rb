@@ -34,6 +34,14 @@ class UsersController < ApplicationController
     end
   end
 
+  def books_count_on_date
+    @user = User.find(params[:id])
+    date = Date.parse(params[:date])
+    count = @user.books.where(created_at: date.all_day).count
+  
+    render json: { count: count, date: date }
+  end
+
   private
 
   def user_params
